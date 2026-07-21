@@ -1752,3 +1752,31 @@ tr:hover { background: rgba(88,166,255,.04); }
     font-size: 11px;
     color: var(--text-muted);
 }
+
+/* ── Chart Header & Tabs ───────────────────────────────── */
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+.chart-header .section-title { margin-bottom: 0; }
+.chart-tabs {
+    display: flex;
+    gap: 2px;
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 2px;
+}
+.chart-tab {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    padding: 4px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all .15s;
+}
+.chart-tab:hover { color: var(--text); }
+.chart-tab.active { background: var(--surface); color: var(--text); }

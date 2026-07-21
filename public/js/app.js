@@ -25,7 +25,9 @@
         backlogTasks:    $('stat-backlog'),
         progressPct:     $('stat-progress'),
         // Chart
-        chartCanvas:     $('progressChart'),
+        chartCanvas:     $('donutChart'),
+        burndownChart:   $('burndownChart'),
+        donutChart:      $('donutChart'),
         // Workers
         workersGrid:     $('workers-grid'),
         workerCount:     $('worker-count-label'),
@@ -211,6 +213,12 @@
             }
 
             renderMetrics(metrics);
+            // Burndown chart
+            try {
+                const bdRes = await fetch(`${API_BASE}/burndown`);
+                const bd = await bdRes.json();
+                if (bd && bd.points) renderBurndownChart(bd);
+            } catch (e) { console.warn('Burndown fetch failed', e); }
             allTasks = tasks;
             renderTasks(tasks);
             renderWorkers(workers);
@@ -306,7 +314,94 @@
         });
     }
 
-    // ── Tasks ──────────────────────────────────────────────────────────
+    // ── Burndown Chart ───────────────────────────────────────────────────
+    function renderBurndownChart(burndown) {
+        const canvas = els.burndownChart;
+        if (!canvas || !burndown || !burndown.points) return;
+        const ctx = canvas.getContext('2d');
+        const labels = burndown.points.map(p => {
+            const d = new Date(p.date + 'T00:00:00');
+            return d.toLocaleDateString('en-GB', {day:'numeric', month:'short'});
+        });
+        const remaining = burndown.points.map(p => p.remaining);
+        const ideal = burndown.ideal || [];
+
+        if (canvas._chart) canvas._chart.destroy();
+        canvas._chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: 'Remaining',
+                        data: remaining,
+                        borderColor: '#3fb950',
+                        backgroundColor: 'rgba(63, 185, 80, 0.1)',
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#3fb950',
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'Ideal',
+                        data: ideal,
+                        borderColor: '#8b949e',
+                        borderDash: [5, 5],
+                        borderWidth: 1.5,
+                        pointRadius: 0,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: '#8b949e', padding: 12, font: { size: 12 } }
+                    },
+                    tooltip: {
+                        backgroundColor: '#1c2128',
+                        titleColor: '#e6edf3',
+                        bodyColor: '#e6edf3',
+                        borderColor: '#30363d',
+                        borderWidth: 1
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: '#8b949e', font: { size: 11 } },
+                        grid: { color: '#21262d' }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#8b949e', font: { size: 11 } },
+                        grid: { color: '#21262d' }
+                    }
+                }
+            }
+        });
+    }
+
+    // ── Chart tab switching ──────────────────────────────────────────────
+    document.querySelectorAll('.chart-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            const type = tab.dataset.chart;
+            document.getElementById('burndown-wrapper').style.display = type === 'burndown' ? '' : 'none';
+            document.getElementById('donut-wrapper').style.display = type === 'donut' ? '' : 'none';
+            if (type === 'burndown' && els.burndownChart._chart) {
+                els.burndownChart._chart.resize();
+            } else if (type === 'donut' && __chartInstance) {
+                __chartInstance.resize();
+            }
+        });
+    });
+
+    // ── Tasks ────────────────────────────────────────────────────────────
     function sortTasks(tasks) {
         if (!sortCol || !Array.isArray(tasks) || tasks.length < 2) return tasks;
         const sorted = [...tasks];

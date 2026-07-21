@@ -132,9 +132,18 @@
     <!-- Chart + Actions Row -->
     <section class="chart-row">
       <div class="chart-container">
-        <h2 class="section-title">Task Distribution</h2>
-        <div class="chart-wrapper">
-          <canvas id="progressChart"></canvas>
+        <div class="chart-header">
+          <h2 class="section-title">Task Distribution</h2>
+          <div class="chart-tabs">
+            <button class="chart-tab active" data-chart="burndown">Burndown</button>
+            <button class="chart-tab" data-chart="donut">Status</button>
+          </div>
+        </div>
+        <div class="chart-wrapper" id="burndown-wrapper">
+          <canvas id="burndownChart"></canvas>
+        </div>
+        <div class="chart-wrapper" id="donut-wrapper" style="display:none">
+          <canvas id="donutChart"></canvas>
         </div>
       </div>
       

@@ -120,6 +120,64 @@ $router->addRoute('GET', '/api/metrics', function () use ($pdo) {
     }
 });
 
+$router->addRoute('GET', '/api/burndown', function () use ($pdo) {
+    if (!$pdo) {
+        jsonResponse(['error' => 'Database unavailable'], 503);
+    }
+    try {
+        $pid = getProjectScope($pdo);
+        // Total non-Backlog tasks for this project
+        $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM tasks WHERE project_id = ? AND status != 'Backlog'");
+        $stmt->execute([$pid]);
+        $totalTasks = (int)$stmt->fetch()['total'];
+
+        // Daily completions for last 14 days
+        $stmt = $pdo->prepare("
+            SELECT DATE(completed_at) as date, COUNT(*) as completed
+            FROM tasks
+            WHERE completed_at IS NOT NULL
+              AND completed_at >= DATE_SUB(NOW(), INTERVAL 14 DAY)
+              AND project_id = ?
+            GROUP BY DATE(completed_at)
+            ORDER BY date ASC
+        ");
+        $stmt->execute([$pid]);
+        $dailyCompleted = $stmt->fetchAll();
+
+        // Build 14-day array
+        $data = [];
+        $cumulative = 0;
+        for ($i = 13; $i >= 0; $i--) {
+            $date = date('Y-m-d', strtotime("-$i days"));
+            $dayCompleted = 0;
+            foreach ($dailyCompleted as $dc) {
+                if ($dc['date'] === $date) {
+                    $dayCompleted = (int)$dc['completed'];
+                    break;
+                }
+            }
+            $cumulative += $dayCompleted;
+            $remaining = $totalTasks - $cumulative;
+            $data[] = ['date' => $date, 'completed' => $dayCompleted, 'remaining' => max(0, $remaining)];
+        }
+
+        // Ideal burn line: (total / 14) per day
+        $idealPerDay = $totalTasks / 14;
+        $ideal = [];
+        for ($i = 0; $i < 14; $i++) {
+            $ideal[] = $totalTasks - ($idealPerDay * ($i + 1));
+        }
+
+        jsonResponse([
+            'total'   => $totalTasks,
+            'points'  => $data,
+            'ideal'   => $ideal
+        ]);
+    } catch (Throwable $e) {
+        ErrorHandler::handle($e, 'Burndown');
+    }
+});
+
 $router->addRoute('GET', '/api/tasks', function () use ($pdo) {
     if (!$pdo) {
         jsonResponse(['error' => 'Database unavailable'], 503);
