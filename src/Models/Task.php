@@ -214,7 +214,7 @@ class Task {
                 isset($data['story_id']) ? (int)$data['story_id'] : (isset($current['story_id']) ? (int)$current['story_id'] : null),
                 isset($data['regression_count']) ? (int)$data['regression_count'] : (int)($current['regression_count'] ?? 0),
                 $data['started_at'] ?? ($current['started_at'] ?? null),
-                $data['completed_at'] ?? ($current['completed_at'] ?? null),
+                array_key_exists('completed_at', $data) ? $data['completed_at'] : ($current['completed_at'] ?? null),
                 $id
             ]);
         } catch (\PDOException $e) {
