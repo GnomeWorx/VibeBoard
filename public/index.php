@@ -468,9 +468,121 @@ $router->addRoute('DELETE', '/api/workers/{id}', function () use ($pdo) {
 $router->addRoute('POST', '/api/workers/start', function () use ($pdo) {
     if (!$pdo) jsonResponse(['error' => 'Database unavailable'], 503);
     try {
+        // Pipeline stage → worker ID mapping (same as pending_worker_tasks.py)
+        $agentWorkers = [1 => 'Kevin', 3 => 'Bob', 4 => 'Dave', 5 => 'Jerry', 8 => 'Carl'];
+        $stageWorkers = [
+            'Plan'      => [1],
+            'Spec'      => [8],
+            'Code'      => [5, 3, 1],
+            'Test'      => [4],
+            'Review'    => [3, 1],
+            'QA-Review' => [4],
+        ];
+        $pipelineStages = array_keys($stageWorkers);
+
+        // Fetch all tasks and workers
+        $taskModel = new Task($pdo);
+        $tasks = $taskModel->findAll();
         $workerModel = new Worker($pdo);
-        $count = $workerModel->batchUpdateStatus('idle', 'busy');
-        jsonResponse(['success' => true, 'updated' => $count, 'action' => 'started']);
+        $workers = $workerModel->findAll();
+        $workerMap = [];
+        foreach ($workers as $w) {
+            $workerMap[$w['id']] = $w;
+        }
+
+        $dispatched = [];
+        $assignedThisBatch = [];
+
+        // Helper: pick the best idle worker for a stage
+        $pickWorker = function ($stage) use ($stageWorkers, $agentWorkers, $workerMap, &$assignedThisBatch) {
+            $candidates = $stageWorkers[$stage] ?? [];
+            foreach ($candidates as $wid) {
+                if (!isset($agentWorkers[$wid])) continue;
+                if (in_array($wid, $assignedThisBatch)) continue;
+                $w = $workerMap[$wid] ?? [];
+                if (($w['status'] ?? '') === 'busy') continue;
+                return $wid;
+            }
+            return null;
+        };
+
+        // Check if already dispatched
+        $alreadyDispatched = function ($task) {
+            $logRaw = $task['execution_log'] ?? '';
+            if (!$logRaw) return false;
+            $log = json_decode($logRaw, true);
+            if (is_array($log)) {
+                foreach ($log as $entry) {
+                    if (is_string($entry) && stripos($entry, 'dispatched') !== false) return true;
+                    if (is_array($entry) && stripos(json_encode($entry), 'dispatched') !== false) return true;
+                }
+            }
+            if (is_string($log) && stripos($log, 'dispatched') !== false) return true;
+            return false;
+        };
+
+        foreach ($tasks as $t) {
+            $status = trim($t['status'] ?? '');
+            if (strtolower($status) === 'done') continue;
+            if (!in_array($status, $pipelineStages)) continue;
+            $wid = $t['assigned_to'] ?? 0;
+            if (!$wid || !isset($agentWorkers[$wid])) continue;
+            if (in_array($wid, $assignedThisBatch)) continue;
+            $w = $workerMap[$wid] ?? [];
+            if (($w['status'] ?? '') === 'busy') continue;
+            if ($alreadyDispatched($t)) continue;
+            $assignedThisBatch[] = $wid;
+            $dispatched[] = [
+                'task_id' => (int)$t['id'],
+                'title' => $t['title'],
+                'description' => $t['description'] ?? '',
+                'status' => $status,
+                'worker_id' => $wid,
+                'worker_name' => $agentWorkers[$wid],
+                'worker_role' => $w['role'] ?? '',
+            ];
+        }
+
+        // Pass 2: Auto-assign unassigned pipeline tasks
+        $unassigned = [];
+        foreach ($tasks as $t) {
+            $status = trim($t['status'] ?? '');
+            if (!in_array($status, $pipelineStages)) continue;
+            if (!empty($t['assigned_to'])) continue;
+            if ($alreadyDispatched($t)) continue;
+            $unassigned[] = $t;
+        }
+        foreach ($unassigned as $t) {
+            $status = trim($t['status'] ?? '');
+            $wid = $pickWorker($status);
+            if ($wid === null) continue;
+            // Assign via DB directly
+            $stmt = $pdo->prepare("UPDATE tasks SET assigned_to = ? WHERE id = ?");
+            $stmt->execute([$wid, (int)$t['id']]);
+            $assignedThisBatch[] = $wid;
+            $w = $workerMap[$wid] ?? [];
+            $dispatched[] = [
+                'task_id' => (int)$t['id'],
+                'title' => $t['title'],
+                'description' => $t['description'] ?? '',
+                'status' => $status,
+                'worker_id' => $wid,
+                'worker_name' => $agentWorkers[$wid],
+                'worker_role' => $w['role'] ?? '',
+            ];
+        }
+
+        // Pass 3: Mark assigned workers busy
+        if (!empty($assignedThisBatch)) {
+            $workerModel->batchUpdateStatus('idle', 'busy');
+        }
+
+        jsonResponse([
+            'success' => true,
+            'action' => 'started',
+            'dispatched' => $dispatched,
+            'worker_count' => count($assignedThisBatch),
+        ]);
     } catch (Throwable $e) {
         ErrorHandler::handle($e, 'Workers');
     }

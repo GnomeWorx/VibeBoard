@@ -1488,7 +1488,13 @@
             const res = await fetch(`${API_BASE}/workers/start`, { method: 'POST' });
             const data = await res.json();
             if (data.success) {
-                showToast(`Started ${data.updated} worker${data.updated !== 1 ? 's' : ''}`, 'success');
+                const d = data.dispatched || [];
+                if (d.length > 0) {
+                    const names = d.map(t => `${t.worker_name}→${t.title}`).join(', ');
+                    showToast(`Started ${d.length} tasks: ${names}`, 'success');
+                } else {
+                    showToast('All workers ready — no tasks to dispatch', 'info');
+                }
                 await reloadAll();
             }
         } catch (err) {
