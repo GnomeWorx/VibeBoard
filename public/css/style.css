@@ -1065,15 +1065,26 @@ tr:hover { background: rgba(88,166,255,.04); }
 }
 
 .chart-wrapper {
-    max-width: 300px;
     margin: 0 auto;
+}
+#burndown-wrapper {
+    max-width: none;
+    width: 100%;
+}
+#burndown-wrapper canvas {
+    max-height: none !important;
+    height: 350px !important;
+    width: 100% !important;
+}
+#donut-wrapper {
+    max-width: 300px;
+}
+#donut-wrapper canvas {
+    max-height: 200px;
 }
 
 .chart-wrapper canvas {
     display: block;
-    max-height: 200px;
-    width: auto !important;
-    height: auto !important;
 }
 
 .actions-panel {
