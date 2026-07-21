@@ -131,12 +131,12 @@ $router->addRoute('GET', '/api/burndown', function () use ($pdo) {
         $stmt->execute([$pid]);
         $totalTasks = (int)$stmt->fetch()['total'];
 
-        // Daily completions for last 14 days
+        // Daily completions for last 14 days (anchored to MySQL date)
         $stmt = $pdo->prepare("
             SELECT DATE(completed_at) as date, COUNT(*) as completed
             FROM tasks
             WHERE completed_at IS NOT NULL
-              AND completed_at >= DATE_SUB(NOW(), INTERVAL 14 DAY)
+              AND completed_at >= DATE_SUB(CURDATE(), INTERVAL 14 DAY)
               AND project_id = ?
             GROUP BY DATE(completed_at)
             ORDER BY date ASC
@@ -144,11 +144,12 @@ $router->addRoute('GET', '/api/burndown', function () use ($pdo) {
         $stmt->execute([$pid]);
         $dailyCompleted = $stmt->fetchAll();
 
-        // Build 14-day array
+        // Build 14-day array anchored to MySQL's current date
+        $today = $pdo->query("SELECT CURDATE() as d")->fetch()['d'];
         $data = [];
         $cumulative = 0;
         for ($i = 13; $i >= 0; $i--) {
-            $date = date('Y-m-d', strtotime("-$i days"));
+            $date = date('Y-m-d', strtotime($today . " -$i days"));
             $dayCompleted = 0;
             foreach ($dailyCompleted as $dc) {
                 if ($dc['date'] === $date) {

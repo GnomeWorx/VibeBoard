@@ -190,6 +190,16 @@ class Task {
             );
             // Fetch current task to use existing values for fields not provided
             $current = $this->findById($id);
+            $newStatus = $data['status'] ?? ($current['status'] ?? 'Plan');
+            $oldStatus = $current['status'] ?? '';
+            // Auto-set completed_at when moving to Done, clear when moving out
+            if (!isset($data['completed_at'])) {
+                if ($newStatus === 'Done' && $oldStatus !== 'Done') {
+                    $data['completed_at'] = date('Y-m-d H:i:s');
+                } elseif ($newStatus !== 'Done' && $oldStatus === 'Done') {
+                    $data['completed_at'] = null;
+                }
+            }
             return $stmt->execute([
                 $data['title'] ?? ($current['title'] ?? 'New Task'),
                 $data['description'] ?? ($current['description'] ?? ''),
