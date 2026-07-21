@@ -1092,6 +1092,17 @@ tr:hover { background: rgba(88,166,255,.04); }
 .actions-panel .btn + .btn {
     margin-top: 6px;
 }
+.actions-panel .btn-primary {
+    background: rgba(62, 96, 138, 0.15);
+    border-color: rgba(62, 96, 138, 0.4);
+    color: #8eb4d4;
+}
+.actions-panel .btn-primary:hover {
+    background: rgba(62, 96, 138, 0.25);
+    border-color: rgba(62, 96, 138, 0.6);
+    color: #a0c6e6;
+}
+.actions-panel .btn-primary svg { color: #8eb4d4; }
 
 /* ── Section Titles ──────────────────────────────────────────────── */
 .section-title {
