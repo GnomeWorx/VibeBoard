@@ -2,7 +2,15 @@
 .idea/
 .openclaw/
 .phpunit.result.cache
+AGENTS.md
+HEARTBEAT.md
+IDENTITY.md
+MEMORY.md
+SOUL.md
+TOOLS.md
+USER.md
 composer-setup.php
+db/*.sql
 hello_test.py
 memory/
 ollama_proxy.py
@@ -11,4 +19,7 @@ openclaw-workspace-state.json
 phpunit.phar
 test_agent.txt
 vibeboard.sh
-db/*.sql
+VibeBoard/
+public/css/venv/
+*.pyc
+__pycache__/
