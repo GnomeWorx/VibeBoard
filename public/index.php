@@ -572,10 +572,9 @@ $router->addRoute('POST', '/api/workers/start', function () use ($pdo) {
             ];
         }
 
-        // Pass 3: Mark assigned workers busy
-        if (!empty($assignedThisBatch)) {
-            $workerModel->batchUpdateStatus('idle', 'busy');
-        }
+        // Pass 3: Don't mark workers busy here — the cron agent does that
+        // when it dispatches subagents via delegate_task. If we mark them busy,
+        // the cron sees NO_PENDING and never spawns subagents.
 
         jsonResponse([
             'success' => true,
