@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VibeBoard — Business Requirements Specification</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #21262d;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text2: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --yellow: #d29922;
+    --orange: #d9762b;
+    --red: #f85149;
+    --purple: #bc8cff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 40px 24px;
+  }
+  .container { max-width: 960px; margin: 0 auto; }
+
+  header {
+    margin-bottom: 48px; padding-bottom: 24px; border-bottom: 1px solid var(--border);
+  }
+  header .meta-row {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 4px 0 8px;
+  }
+  header h1 { font-size: 28px; font-weight: 700; }
+  header .badge {
+    font-size: 11px; padding: 3px 10px; border-radius: 20px;
+    background: var(--accent); color: #0d1117; font-weight: 600;
+  }
+  header .meta { color: var(--text2); font-size: 13px; }
+  header .author-box {
+    margin-top: 16px; padding: 12px 16px; background: var(--bg2);
+    border: 1px solid var(--border); border-radius: 8px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .author-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--purple), var(--accent));
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 16px; color: #0d1117; flex-shrink: 0;
+  }
+  .author-info { font-size: 13px; }
+  .author-info .name { color: var(--text); font-weight: 600; }
+  .author-info .role { color: var(--text2); }
+
+  .toc {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 20px 24px; margin-bottom: 40px;
+  }
+  .toc h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--text2); margin-bottom: 12px; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin-bottom: 4px; font-size: 14px; }
+  .toc li a { color: var(--accent); text-decoration: none; }
+  .toc li a:hover { text-decoration: underline; }
+  .toc li span { color: var(--text2); font-size: 12px; }
+
+  .section {
+    margin-bottom: 48px; scroll-margin-top: 20px;
+  }
+  .section h2 {
+    font-size: 20px; font-weight: 600; margin-bottom: 16px;
+    padding-bottom: 8px; border-bottom: 1px solid var(--bg3);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section h2 .num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 6px;
+    background: var(--bg3); font-size: 14px; color: var(--text2); flex-shrink: 0;
+  }
+  .section > p { color: var(--text2); font-size: 14px; margin-bottom: 12px; }
+  .section ul, .section ol { padding-left: 22px; margin-bottom: 12px; }
+  .section li { color: var(--text2); font-size: 14px; margin-bottom: 6px; }
+  .section li strong { color: var(--text); }
+
+  /* ── User Story Card ───────────────── */
+  .story {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 16px 20px; margin-bottom: 16px;
+  }
+  .story .story-id {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .5px; color: var(--purple); margin-bottom: 6px;
+  }
+  .story .story-text {
+    font-size: 15px; color: var(--text); font-style: italic;
+    margin-bottom: 12px; line-height: 1.5;
+  }
+  .story .story-text em { color: var(--accent); font-style: italic; }
+  .story .ac-label {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .5px; color: var(--text2); margin-bottom: 6px;
+  }
+  .story ul.ac { padding-left: 18px; margin-bottom: 0; }
+  .story ul.ac li {
+    font-size: 13px; color: var(--text2); margin-bottom: 4px;
+    list-style-type: '☐  ';
+  }
+  .story ul.ac li::marker { color: var(--accent); }
+
+  .sub-section {
+    margin-top: 28px;
+  }
+  .sub-section h3 {
+    font-size: 16px; font-weight: 600; margin-bottom: 10px;
+    color: var(--accent);
+  }
+
+  .callout {
+    background: var(--bg3); border-left: 3px solid var(--accent);
+    padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 12px 0;
+    font-size: 13px; color: var(--text2);
+  }
+  .callout strong { color: var(--text); }
+
+  .table-wrap {
+    overflow-x: auto; margin: 12px 0;
+    border: 1px solid var(--border); border-radius: 8px;
+  }
+  table {
+    width: 100%; border-collapse: collapse; font-size: 13px;
+  }
+  th {
+    background: var(--bg3); text-align: left; padding: 8px 12px;
+    font-weight: 600; color: var(--text); white-space: nowrap;
+  }
+  td { padding: 8px 12px; border-top: 1px solid var(--border); color: var(--text2); }
+
+  .glossary-item {
+    display: flex; gap: 12px; padding: 8px 0;
+    border-bottom: 1px solid var(--bg3); font-size: 14px;
+  }
+  .glossary-item .term {
+    flex: 0 0 160px; font-weight: 600; color: var(--text);
+  }
+  .glossary-item .def { color: var(--text2); }
+
+  footer {
+    margin-top: 60px; padding-top: 20px; border-top: 1px solid var(--border);
+    text-align: center; color: var(--text2); font-size: 13px;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  @media (max-width: 600px) {
+    body { padding: 20px 12px; }
+    .glossary-item { flex-direction: column; gap: 2px; }
+    .glossary-item .term { flex: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <div class="meta-row">
+    <span class="badge">SPEC v3.0</span>
+    <span class="meta">Prepared 21 Jul 2026 &middot; VibeBoard</span>
+  </div>
+  <h1>Business Requirements Specification</h1>
+  <div class="meta">User stories &amp; acceptance criteria for the VibeBoard project dashboard</div>
+  <div class="author-box">
+    <div class="author-avatar">SB</div>
+    <div class="author-info">
+      <div class="name">SpecBot</div>
+      <div class="role">Business Analyst &middot; VibeBoard System</div>
+    </div>
+  </div>
+</header>
+
+<!-- ── Table of Contents ── -->
+<nav class="toc">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#s1">Introduction &amp; Scope</a> <span>— what this document covers</span></li>
+    <li><a href="#s2">Glossary</a> <span>— domain terms and definitions</span></li>
+    <li><a href="#s3">User Personas</a> <span>— who uses the system</span></li>
+    <li><a href="#s4">Feature: Project Container</a> <span>— US-01 to US-05</span></li>
+    <li><a href="#s5">Feature: Task Management</a> <span>— US-06 to US-11</span></li>
+    <li><a href="#s6">Feature: Worker Allocation</a> <span>— US-12 to US-14</span></li>
+    <li><a href="#s7">Feature: Dashboard &amp; Metrics</a> <span>— US-15 to US-18</span></li>
+    <li><a href="#s8">Feature: Park &amp; Resume</a> <span>— US-19 to US-21</span></li>
+    <li><a href="#s9">Non-Functional Requirements</a> <span>— performance, reliability, UX</span></li>
+    <li><a href="#s10">Feature: Agent Orchestration</a> <span>— US-22 to US-28</span></li>
+    <li><a href="#s11">Future Considerations</a> <span>— out of scope for v4.0</span></li>
+  </ol>
+</nav>
+
+<!-- ═══════════ 1. Introduction ═══════════ -->
+<section class="section" id="s1">
+  <h2><span class="num">1</span> Introduction &amp; Scope</h2>
+  <p>VibeBoard is a lightweight, single-page project dashboard that helps a solo developer or small team manage multiple software projects simultaneously. The core problem it solves: <em>when you can only physically work on one project at a time, how do you keep track of where you left off in the others?</em></p>
+  <p>This document describes the system from the user's perspective. Every feature is expressed as a <strong>user story</strong> with <strong>acceptance criteria</strong> that define when the story is done. These stories are the source of truth for the development backlog — each one maps to one or more tasks in the tracker.</p>
+  <div class="callout"><strong>Scope:</strong> v3.0 covers multi-project container management, task CRUD with status workflow, worker allocation and tracking, dashboard metrics and visualisation, park/resume lifecycle, real-time data refresh, and agent orchestration with pipeline tracking and swarm visibility. Authentication, user management, and API integrations are out of scope for this version.</div>
+</section>
+
+<!-- ═══════════ 2. Glossary ═══════════ -->
+<section class="section" id="s2">
+  <h2><span class="num">2</span> Glossary</h2>
+  <div class="glossary-item">
+    <div class="term">Project</div>
+    <div class="def">A named container that holds its own tasks, workers, and metrics. Only one project can be active at a time. Projects can be active, parked (with a save-state note), archived, or deleted.</div>
+  </div>
+  <div class="glossary-item">
+    <div class="term">Task</div>
+    <div class="def">A single unit of work belonging to a project. Moves through a lifecycle: Backlog → In Progress → QA-Review → Done. Can be assigned to a worker.</div>
+  </div>
+  <div class="glossary-item">
+    <div class="term">Worker</div>
+    <div class="def">A person or software agent that can be assigned to tasks. Has a role (e.g. Frontend Developer, QA Engineer) and a status (idle or busy).</div>
+  </div>
+  <div class="glossary-item">
+    <div class="term">Park / Park Note</div>
+    <div class="def">Suspending work on the current project. The system saves an auto-generated summary (tasks done, in-progress, which workers were on what) plus any manual note the user adds, so context is preserved when the project is reactivated later.</div>
+  </div>
+  <div class="glossary-item">
+    <div class="term">Current Project</div>
+    <div class="def">The single project whose tasks, workers, and metrics are shown on the dashboard. Switching the current project re-scopes every view.</div>
+  </div>
+  <div class="glossary-item">
+    <div class="term">Status (Task)</div>
+    <div class="def">One of: Backlog (not started), In Progress (actively being worked), QA-Review (awaiting verification), Done (complete).</div>
+  </div>
+  <div class="glossary-item">
+    <div class="term">Auto-Switch</div>
+    <div class="def">When the current project is parked or deleted, the system automatically selects the next available active project so the dashboard never shows an empty state.</div>
+  </div>
+</section>
+
+<!-- ═══════════ 3. Personas ═══════════ -->
+<section class="section" id="s3">
+  <h2><span class="num">3</span> User Personas</h2>
+
+  <div class="story">
+    <div class="story-id">Persona: Solo Developer</div>
+    <div class="story-text">A single developer (possibly with AI agent workers) managing multiple small-to-medium projects. Juggles context between them. Needs to park one project and resume another without losing their place. Acts as project manager, developer, and QA simultaneously.</div>
+  </div>
+  <div class="story">
+    <div class="story-id">Persona: Small Team Lead</div>
+    <div class="story-text">Manages 1–3 developers and a QA person across one active project. Allocates tasks, checks progress, re-assigns blocked work. Uses the dashboard for stand-ups and status checks.</div>
+  </div>
+  <div class="story">
+    <div class="story-id">Persona: AI Agent Worker</div>
+    <div class="story-text">A software agent (like Grunt1, Pikey, SpecBot) assigned to tasks. Has a defined role, can be busy or idle, and the dashboard shows what task they're currently on. Agents do not log in — they are tracked by the dashboard.</div>
+  </div>
+
+  <div class="callout"><strong>Primary persona:</strong> Solo Developer. The system is optimised for one-person-multiple-projects use. Team-lead features (e.g. multi-user login, permissions) are future scope.</div>
+</section>
+
+<!-- ═══════════ 4. Feature: Project Container ═══════════ -->
+<section class="section" id="s4">
+  <h2><span class="num">4</span> Feature: Project Container</h2>
+  <p>Projects are the top-level organisational unit. Every task, worker allocation, and metric lives inside exactly one project. The user sees exactly one project at a time.</p>
+
+  <div class="sub-section">
+    <h3>US-01: Create a new project</h3>
+    <div class="story">
+      <div class="story-id">User Story</div>
+      <div class="story-text">As a <em>Solo Developer</em>, I want to create a new project with a name and optional description so that I can begin organising work for a different codebase or initiative.</div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac">
+        <li>A "New Project" form is accessible from the Manage Projects modal</li>
+        <li>The form requires a name (1–255 characters) and accepts an optional description</li>
+        <li>Submitting the form creates the project with status "active"</li>
+        <li>After creation, the new project becomes the current project — the dashboard instantly re-scopes to show it</li>
+        <li>The new project appears in the project selector dropdown and in the Manage Projects list</li>
+        <li>If the API fails, an error toast is shown and the dashboard state is unchanged</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sub-section">
+    <h3>US-02: Switch between projects</h3>
+    <div class="story">
+      <div class="story-id">User Story</div>
+      <div class="story-text">As a <em>Solo Developer</em>, I want to switch which project I'm looking at from a single click in the header so I can quickly context-switch between my projects without leaving the dashboard.</div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac">
+        <li>A dropdown in the header shows all projects in order: active first, then parked, then archived</li>
+        <li>Each dropdown entry shows the project name plus task count (e.g. "VibeBoard 17 tasks, 2 done")</li>
+        <li>The currently active project is visually indicated (checked or highlighted)</li>
+        <li>Clicking a project in the dropdown immediately makes it the current project</li>
+        <li>After switching, every dashboard section (stats, chart, workers, task table) updates to show that project's data</li>
+        <li>Switching does not change the status of the project being left</li>
+        <li>The page title updates to reflect the current project name</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sub-section">
+    <h3>US-03: See current project details at a glance</h3>
+    <div class="story">
+      <div class="story-id">User Story</div>
+      <div class="story-text">As a <em>Small Team Lead</em>, I want the current project's name, description, and summary stats visible in the header and dashboard so I always know what context I'm working in.</div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac">
+        <li>The header displays the current project name next to a dropdown trigger</li>
+        <li>The db-status indicator shows connection health</li>
+        <li>The stats cards (total, completed, in-progress, backlog, progress %) reflect the current project only</li>
+        <li>Every data-fetching API call is scoped to the current project's ID</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sub-section">
+    <h3>US-04: Delete a project</h3>
+    <div class="story">
+      <div class="story-id">User Story</div>
+      <div class="story-text">As a <em>Solo Developer</em>, I want to delete a project I no longer need so that my project list stays clean and uncluttered.</div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac">
+        <li>A delete button appears on each project row in the Manage Projects modal</li>
+        <li>Clicking delete shows a confirmation prompt ("Are you sure you want to delete [project name]?")</li>
+        <li>On confirm, the project is deleted from the database and its tasks are unlinked (project_id set to NULL, not cascade-deleted)</li>
+        <li>If the deleted project was the current project, the system auto-switches to the next available project</li>
+        <li>A success toast is shown; the project vanishes from dropdown and manage list</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sub-section">
+    <h3>US-05: Manage all projects from one modal</h3>
+    <div class="story">
+      <div class="story-id">User Story</div>
+      <div class="story-text">As a <em>Small Team Lead</em>, I want a single "Manage Projects" view where I can see all projects side by side with their status, task counts, and action buttons so I can maintain an overview of everything on my plate.</div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac">
+        <li>"Manage Projects" is accessible from the bottom of the project selector dropdown</li>
+        <li>The modal lists every project in a table with columns: Name, Status, Tasks, Progress %, Park Note, Actions</li>
+        <li>Action buttons per project: Activate (makes it current), Park (opens park modal), Delete (with confirmation)</li>
+        <li>A "New Project" button at the top of the modal opens an inline creation form</li>
+        <li>Closing and re-opening the modal refreshes the data</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 5. Feature: Task Management ═══════════ -->
+<section class="section" id="s5">
+  <h2><span class="num">5</span> Feature: Task Management</h2>
+  <p>Tasks are the atomic unit of work. Each task belongs to exactly one project and optionally one worker. Tasks flow through a defined status lifecycle.</p>
+
+  <div class="sub-section">
+    <h3>US-06: View tasks for the current project</h3>
+    <div class="story">
+      <div class="story-id">User Story</div>
+      <div class="story-text">As a <em>Solo Developer</em>, I want to see all tasks for my current project in a sortable table so I know what needs to be done and what's in progress.</div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac">
+        <li>The task table displays ID, Title, Status (coloured badge), Worker (name or "—"), Created date, and Actions (Edit, Delete)</li>
+        <li>Only tasks belonging to the current project are shown</li>
+        <li>Switching projects re-populates the table with that project's tasks</li>
+        <li>Long task lists support scrolling within the table container</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sub-section">
+    <h3>US-07: Create a new task</h3>
+    <div class="story">
+      <div class="story-id">User Story</div>
+      <div class="story-text">As a <em>Solo Developer</em>, I want to add a task to the current project by filling in a title, description, and optionally setting its status and worker, so I can capture work items as they come up.</div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac">
+        <li>A "New Task" button opens a modal form with fields: Title (required), Description (optional, textarea), Status (dropdown, default "Backlog"), Worker (dropdown of idle+busy workers or unassigned)</li>
+        <li>Submitting creates the task scoped to the current project</li>
+        <li>The new task appears instantly in the table without a page reload</li>
+        <li>If a worker is assigned, the worker card updates to show them as busy with the new task</li>
+        <li>The stats counters update to reflect the new task</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sub-section">
+    <h3>US-08: Edit a task</h3>
+    <div class="story">
+      <div class="story-id">User Story</div>
+      <div class="story-text">As a <em>Solo Developer</em>, I want to change a task's title, description, status, or worker assignment so I can correct mistakes and track progress.</div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac">
+        <li>An "Edit" button on each task row opens a pre-filled modal with the task's current values</li>
+        <li>Changing status updates the badge colour in the table immediately</li>
+        <li>Changing worker assignment updates worker cards (old worker becomes idle if no other task, new worker becomes busy)</li>
+        <li>Switching a task to "Done" increments the completed counter and recalculates progress %</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sub-section">
+    <h3>US-09: Delete a task</h3>
+    <div class="story">
+      <div class="story-id">User Story</div>
+      <div class="story-text">As a <em>Solo Developer</em>, I want to remove a task that was added by mistake or is no longer relevant, so the backlog stays accurate.</div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac">
+        <li>A "Delete" button on each task row removes it after confirmation</li>
+        <li>The task vanishes from the table and the stats are recalculated</li>
+        <li>If the task was assigned to a worker, that worker's card updates (becomes idle if no other active task)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sub-section">
+    <h3>US-10: Move a task through its status lifecycle</h3>
+    <div class="story">
+      <div class="story-id">User Story</div>
+      <div class="story-text">As a <em>Small Team Lead</em>, I want a clear status workflow so the team has a shared understanding of where each task is — from idea (Backlog) to active work (In Progress) to verification (QA-Review) to completion (Done).</div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac">
+        <li>Valid statuses are: Backlog, In Progress, QA-Review, Done</li>
+        <li>Each status has a distinct badge colour: grey (Backlog), blue (In Progress), orange (QA-Review), green (Done)</li>
+        <li>The status chart (doughnut) updates when any task moves between statuses</li>
+        <li>Progress % is calculated as: (task count where status=Done) / (total task count) * 100</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sub-section">
+    <h3>US-11: Task count and progress scoped to project</h3>
+    <div class="story">
+      <div class="story-id">User Story</div>
+      <div class="story-text">As a <em>Solo Developer</em>, I want the task counts and progress percentage to reflect only the current project, so I'm not misled by stale numbers from another project.</div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac">
+        <li>Every task-related API endpoint accepts or derives the current project scope internally</li>
+        <li>Switching projects recalculates all metrics from zero for the new project</li>
+        <li>A project with zero tasks shows 0% progress, not an error</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 6. Feature: Worker Allocation ═══════════ -->
+<section class="section" id="s6">
+  <h2><span class="num">6</span> Feature: Worker Allocation</h2>
+  <p>Workers represent people or agents that do the work. The dashboard tracks who is busy, who is idle, and what they're working on — scoped to the current project.</p>
+
+  <div class="sub-section">
+    <h3>US-12: See all workers and their current task</h3>
+    <div class="story">
+      <div class="story-id">User Story</div>
+      <div class="story-text">As a <em>Small Team Lead</em>, I want to see all workers in the system with their role, status (busy/idle), and which task they're currently assigned to so I can allocate work effectively during stand-ups.</div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac">
+        <li>Worker cards are displayed in a dedicated section below the stats</li>
+        <li>Each card shows: initials avatar, name, role, status badge (BUSY/IDLE), and the title of their current task (or "No task assigned")</li>
+        <li>The section header shows "X active / Y total" where active = workers with tasks in the current project</li>
+        <li>Worker data is scoped: only tasks within the current project determine busy/idle status</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sub-section">
+    <h3>US-13: Assign a worker to a task</h3>
+    <div class="story">
+      <div class="story-id">User Story</div>
+      <div class="story-text">As a <em>Solo Developer</em>, I want to assign a worker to a task when creating or editing it, so responsibility is clear and the dashboard reflects who is doing what.</div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac">
+        <li>The task create/edit modal includes a "Worker" dropdown listing all workers</li>
+        <li>Selecting a worker and saving immediately updates that worker's card to show the new task</li>
+        <li>A worker can be assigned to multiple tasks — they are "busy" if they have at least one non-Done task</li>
+        <li>Unassigning a worker from all tasks returns them to "idle"</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sub-section">
+    <h3>US-14: Dashboard updates when worker status changes</h3>
+    <div class="story">
+      <div class="story-id">User Story</div>
+      <div class="story-text">As a <em>Small Team Lead</em>, I want the worker section to refresh automatically so I don't have to manually poll for changes when tasks are re-assigned.</div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac">
+        <li>Worker status refreshes on every dashboard auto-refresh cycle (30 seconds)</li>
+        <li>Manual refresh button also reloads worker data</li>
+        <li>Worker cards update within one refresh cycle of a task being assigned or completed</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 7. Feature: Dashboard & Metrics ═══════════ -->
+<section class="section" id="s7">
+  <h2><span class="num">7</span> Feature: Dashboard &amp; Metrics</h2>
+  <p>The dashboard is the primary interface. It gives an at-a-glance view of project health, task distribution, and worker allocation.</p>
+
+  <div class="sub-section">
+    <h3>US-15: See project-level summary statistics</h3>
+    <div class="story">
+      <div class="story-id">User Story</div>
+      <div class="story-text">As a <em>Solo Developer</em>, I want to see five key numbers at the top of the dashboard — Total Tasks, Completed, In Progress, Backlog, and Progress % — so I can assess project health at a glance.</div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac">
+        <li>Five stat cards are displayed in a row at the top of the main content area</li>
+        <li>Each card has an icon, the numeric value, and a label</li>
+        <li>Progress % is computed as (done / total) × 100, shown as an integer percentage</li>
+        <li>All stats update when the project switches or tasks change</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sub-section">
+    <h3>US-16: Visualise task distribution with a chart</h3>
+    <div class="story">
+      <div class="story-id">User Story</div>
+      <div class="story-text">As a <em>Small Team Lead</em>, I want a doughnut chart showing the status breakdown so I can quickly see whether the team is balanced across active work vs backlog.</div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac">
+        <li>A Chart.js doughnut chart appears below the stats section</li>
+        <li>The chart segments are colour-coded by status: Backlog (grey), In Progress (blue), QA-Review (orange), Done (green)</li>
+        <li>The chart title reads "Task Distribution" and is scoped to the current project</li>
+        <li>Switching projects re-renders the chart with the new project's data</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sub-section">
+    <h3>US-17: Auto-refresh dashboard data</h3>
+    <div class="story">
+      <div class="story-id">User Story</div>
+      <div class="story-text">As a <em>Solo Developer</em>, I want the dashboard to refresh itself automatically every 30 seconds so I always see the latest state without clicking anything.</div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac">
+        <li>An auto-refresh timer fetches all dashboard data every 30 seconds</li>
+        <li>Auto-refresh does not cause a full page reload — data updates in place</li>
+        <li>A manual "Refresh" button is available for immediate updates</li>
+        <li>Auto-refresh is paused while a modal is open to avoid disrupting the user</li>
+        <li>If an API call fails during auto-refresh, a toast shows the error but the existing data remains visible</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sub-section">
+    <h3>US-18: Visual feedback during data loading</h3>
+    <div class="story">
+      <div class="story-id">User Story</div>
+      <div class="story-text">As a <em>Solo Developer</em>, I want a loading spinner when data is being fetched so I know the system is working and hasn't frozen.</div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac">
+        <li>A full-page loading overlay with a spinner appears during initial data load</li>
+        <li>Subsequent auto-refreshes do not show the overlay (data updates silently)</li>
+        <li>Failed API calls show an error toast notification, not a spinner that never resolves</li>
+        <li>Toast notifications auto-dismiss after 4 seconds</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 8. Feature: Park & Resume ═══════════ -->
+<section class="section" id="s8">
+  <h2><span class="num">8</span> Feature: Park &amp; Resume</h2>
+  <p>The park/resume lifecycle is the heart of the multi-project workflow. It lets the user suspend work on one project with full context and pick up another.</p>
+
+  <div class="sub-section">
+    <h3>US-19: Park the current project with context</h3>
+    <div class="story">
+      <div class="story-id">User Story</div>
+      <div class="story-text">As a <em>Solo Developer</em>, I want to park the current project with a single click and have the system automatically save a summary of where I left off, so I can come back weeks later and know exactly what was happening.</div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac">
+        <li>A "Park" button is always visible in the header nav bar</li>
+        <li>Clicking "Park" opens a modal showing an auto-generated summary (e.g. "2 done, 2 in progress (12% complete). Grunt1 on 'Build API endpoints', Pikey on 'Integration Test Update'")</li>
+        <li>The user can add a manual note in a textarea on the park modal</li>
+        <li>Confirming the park sets the project's status to "parked" and saves the park note to the database</li>
+        <li>After parking, the system auto-switches to the next available active project</li>
+        <li>The parked project appears in the dropdown with a "parked" indicator</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sub-section">
+    <h3>US-20: Resume (reactivate) a parked project</h3>
+    <div class="story">
+      <div class="story-id">User Story</div>
+      <div class="story-text">As a <em>Solo Developer</em>, I want to reactivate a parked project from the dropdown or Manage Projects modal so I can pick up exactly where I left off.</div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac">
+        <li>Clicking a parked project in the dropdown activates it and switches the dashboard view</li>
+        <li>Alternatively, the Manage Projects modal has an "Activate" button for each parked project</li>
+        <li>Reactivating sets the project status back to "active"</li>
+        <li>The park note is preserved in the database (not cleared on reactivate) so the user can refer to it later</li>
+        <li>The dashboard re-scopes to show the reactivated project's current data</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sub-section">
+    <h3>US-21: See park notes in project list</h3>
+    <div class="story">
+      <div class="story-id">User Story</div>
+      <div class="story-text">As a <em>Solo Developer</em>, I want to see the park note for each parked project in the Manage Projects modal so I can decide which one to resume without having to open them one at a time.</div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac">
+        <li>The Manage Projects table shows a "Park Note" column for each project</li>
+        <li>Parked projects display their park note (truncated if longer than 80 characters)</li>
+        <li>Active and archived projects show "—" in the park note column</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 9. Non-Functional Requirements ═══════════ -->
+<section class="section" id="s9">
+  <h2><span class="num">9</span> Non-Functional Requirements</h2>
+
+  <div class="story">
+    <div class="story-id">NFR-01: Performance</div>
+    <div class="story-text">The dashboard should feel instant. All API responses must complete within 200ms for typical project sizes (up to 50 tasks, 10 workers).</div>
+    <div class="ac-label">Acceptance Criteria</div>
+    <ul class="ac">
+      <li>API response time for /api/tasks, /api/metrics, /api/workers stays under 100ms at P95 for typical data sizes</li>
+      <li>Full dashboard data load (5 concurrent API calls) completes in under 500ms</li>
+      <li>Auto-refresh does not cause visible UI stutter or flicker</li>
+    </ul>
+  </div>
+
+  <div class="story">
+    <div class="story-id">NFR-02: Visual Consistency</div>
+    <div class="story-text">The entire application uses a dark theme. All UI elements must be legible and consistent in styling.</div>
+    <div class="ac-label">Acceptance Criteria</div>
+    <ul class="ac">
+      <li>Background colour is #0d1117 (GitHub dark) or equivalent</li>
+      <li>All modals, buttons, tables, and cards share consistent border-radius (8px), padding, and font sizing</li>
+      <li>Hover and active states are defined for all interactive elements</li>
+      <li>Status badges have distinct, semantic colours</li>
+    </ul>
+  </div>
+
+  <div class="story">
+    <div class="story-id">NFR-03: Reliability</div>
+    <div class="story-text">The system must handle common edge cases gracefully without showing raw errors to the user.</div>
+    <div class="ac-label">Acceptance Criteria</div>
+    <ul class="ac">
+      <li>If the database is unreachable, the API returns a 503 with a JSON error message</li>
+      <li>The frontend shows a user-friendly error toast, not a blank page or raw JSON</li>
+      <li>Creating a project with a duplicate name is handled (unique constraint shows error toast)</li>
+      <li>Deleting the last remaining project: the Manage Projects modal shows "No projects" state</li>
+      <li>A project with zero tasks shows 0% progress and empty chart — no errors</li>
+      <li>All confirmations (delete task, delete project) require explicit user confirmation</li>
+    </ul>
+  </div>
+
+  <div class="story">
+    <div class="story-id">NFR-04: Data Persistence</div>
+    <div class="story-text">Park notes, task statuses, and worker assignments must survive server restarts.</div>
+    <div class="ac-label">Acceptance Criteria</div>
+    <ul class="ac">
+      <li>All data is stored in MariaDB (not in-memory or session)</li>
+      <li>Stopping and restarting the PHP dev server preserves all data</li>
+      <li>Park notes written to the database are immediately readable on the next dashboard load</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════ 10. Agent Orchestration ═══════════ -->
+<section class="section" id="s10">
+  <h2><span class="num">10</span> Feature: Agent Orchestration</h2>
+  <p>VibeBoard is the control plane for a multi-agent software development swarm. The <strong>Brain</strong> (Orchestrator) decomposes user requests into atomic sub-tasks and dispatches them to named <strong>Worker Agents</strong>. Each worker has a defined role, toolset, and responsibility. VibeBoard tracks every task from creation through assignment, execution, and delivery — providing full visibility into the swarm's activity.</p>
+
+  <div class="callout">
+    <strong>Key Concepts:</strong><br>
+    <strong>Brain</strong> — the orchestrator that plans, delegates, validates, and synthesises. Runs reasoning-heavy models.<br>
+    <strong>Worker</strong> — a stateless execution agent that receives full context with every dispatch. Runs coding/utility models.<br>
+    <strong>Pipeline</strong> — a sequential workflow (e.g. Spec → Plan → Code → Test) where each stage depends on the prior.<br>
+    <strong>Swarm</strong> — the collection of all active workers. Workers run in parallel when independent, serial when dependent.<br>
+    <strong>Fallback Chain</strong> — if the primary model fails (429/5xx/timeout), the system escalates through a ranked list of alternatives before reporting failure.
+  </div>
+
+  <div class="story">
+    <div class="story-id">US-22: Track named worker agents</div>
+    <div class="story-text">As a Brain orchestrator, I want to define named worker agents (Pikey, Grunt1, Grunt2, SpecBot, TesterBot) with their role, model, and toolset so that tasks can be assigned to the right agent for the job.</div>
+    <div class="ac-label">Acceptance Criteria</div>
+    <ul class="ac">
+      <li>Workers have a name, role description, and status (Idle/Busy/Offline)</li>
+      <li>Each worker can be assigned a preferred model and provider</li>
+      <li>Worker list persists in the database and is editable via the Manage Agents modal</li>
+      <li>Worker allocation dashboard shows which worker is doing what in real time</li>
+    </ul>
+  </div>
+
+  <div class="story">
+    <div class="story-id">US-23: Assign tasks to a named agent</div>
+    <div class="story-text">As a Brain orchestrator, I want to assign any backlog task to a specific worker agent so that the swarm can execute work in parallel without conflict.</div>
+    <div class="ac-label">Acceptance Criteria</div>
+    <ul class="ac">
+      <li>Task create/edit form includes an agent dropdown (selectable from the worker pool)</li>
+      <li>Assigning an agent changes the worker's status to Busy</li>
+      <li>When a task is moved to Done, the worker's status returns to Idle</li>
+      <li>Each worker can only have one active In Progress task at a time</li>
+    </ul>
+  </div>
+
+  <div class="story">
+    <div class="story-id">US-24: View task execution pipeline</div>
+    <div class="story-text">As a Brain orchestrator, I want to see the pipeline stages (Plan → Spec → Assess → Code → Test → Review → Done) for each task so that I know exactly where work is blocked or waiting.</div>
+    <div class="ac-label">Acceptance Criteria</div>
+    <ul class="ac">
+      <li>Tasks can be assigned a pipeline stage in addition to their status</li>
+      <li>Pipeline stages are ordered and visible as a progress bar or step indicator</li>
+      <li>The dashboard can filter tasks by pipeline stage</li>
+      <li>Dependent tasks show which task(s) they are blocked by</li>
+    </ul>
+  </div>
+
+  <div class="story">
+    <div class="story-id">US-25: Define task dependencies</div>
+    <div class="story-text">As a Brain orchestrator, I want to mark tasks as blocked-by or depends-on other tasks so that the swarm executes work in the correct order without starting a task before its prerequisites are done.</div>
+    <div class="ac-label">Acceptance Criteria</div>
+    <ul class="ac">
+      <li>Task detail view has a "Depends On" field referencing one or more task IDs</li>
+      <li>A task with unmet dependencies shows "Blocked" status and cannot be moved to In Progress</li>
+      <li>When a dependency task is completed, the blocked task auto-unblocks (status returns to Backlog/Ready)</li>
+      <li>Circular dependency detection — creating a cycle shows an error and is rejected</li>
+    </ul>
+  </div>
+
+  <div class="story">
+    <div class="story-id">US-26: Log task execution results</div>
+    <div class="story-text">As a Brain orchestrator, I want every delegated task to log its outcome — files created, test results, errors — so that I can audit what the swarm produced without re-running it.</div>
+    <div class="ac-label">Acceptance Criteria</div>
+    <ul class="ac">
+      <li>Task detail page has an "Execution Log" section showing timestamps, worker output, and exit codes</li>
+      <li>Failed tasks show the error message and retry count</li>
+      <li>The log is append-only and preserved across deployments</li>
+      <li>Each log entry records: worker name, timestamp, duration, exit status, and summary</li>
+    </ul>
+  </div>
+
+  <div class="story">
+    <div class="story-id">US-27: Automatic retry on failure</div>
+    <div class="story-text">As a Brain orchestrator, I want failed tasks to automatically retry up to a configurable limit so that transient failures (rate limits, timeouts) don't require manual intervention.</div>
+    <div class="ac-label">Acceptance Criteria</div>
+    <ul class="ac">
+      <li>Each task has a retry count and max retries setting (default: 3)</li>
+      <li>On failure, the task is re-queued with exponential backoff (2s, 4s, 8s delay)</li>
+      <li>After exhausting retries, the task is marked Failed and the Brain is notified</li>
+      <li>Retries use the next model in the fallback chain (not the same model that failed)</li>
+    </ul>
+  </div>
+
+  <div class="story">
+    <div class="story-id">US-28: Swarm activity dashboard</div>
+    <div class="story-text">As a Brain orchestrator, I want a live swarm view showing all active workers, their current task, duration, and model, so that I can monitor swarm health and spot stuck tasks at a glance.</div>
+    <div class="ac-label">Acceptance Criteria</div>
+    <ul class="ac">
+      <li>Swarm view shows each worker as a card with: name, role, model, elapsed time, task title, status</li>
+      <li>Idle workers show "Waiting for assignment" with no elapsed time</li>
+      <li>Workers stuck on a task for more than 5 minutes are highlighted in amber</li>
+      <li>Clicking a worker card opens their current task detail</li>
+      <li>The view auto-refreshes every 10 seconds</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════ 11. Future Considerations ═══════════ -->
+<section class="section" id="s11">
+  <h2><span class="num">11</span> Future Considerations</h2>
+  <p>The following items are explicitly <strong>out of scope</strong> for v4.0. They are recorded here to inform future work without derailing current development.</p>
+
+  <div class="story">
+    <div class="story-id">FS-01</div>
+    <div class="story-text">User authentication and multi-user access control. Currently the system assumes a single trusted user.</div>
+  </div>
+  <div class="story">
+    <div class="story-id">FS-02</div>
+    <div class="story-text">Advanced task filtering and free-text search within the task table.</div>
+  </div>
+  <div class="story">
+    <div class="story-id">FS-03</div>
+    <div class="story-text">Drag-and-drop task status changes (Kanban board view).</div>
+  </div>
+  <div class="story">
+    <div class="story-id">FS-04</div>
+    <div class="story-text">Project-level settings or customisation (e.g. custom statuses, colour themes).</div>
+  </div>
+  <div class="story">
+    <div class="story-id">FS-05</div>
+    <div class="story-text">API integrations with external tools (GitHub, Jira, Slack).</div>
+  </div>
+  <div class="story">
+    <div class="story-id">FS-06</div>
+    <div class="story-text">Time tracking or deadline/overdue calculations per-task.</div>
+  </div>
+  <div class="story">
+    <div class="story-id">FS-07</div>
+    <div class="story-text">Export/import of projects or task data.</div>
+  </div>
+</section>
+
+<footer>
+  <p>VibeBoard &mdash; Business Requirements Specification v3.0</p>
+  <p>Prepared by SpecBot (Business Analyst) &mdash; <a href="/">back to dashboard</a></p>
+</footer>
+
+</div>
+</body>
+</html>

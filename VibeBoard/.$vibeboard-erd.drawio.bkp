@@ -1,0 +1,87 @@
+<mxfile host="app.diagrams.net" agent="Hermes" version="24.0.0">
+  <diagram name="VibeBoard ERD" id="vibeboard-erd">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1080" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ─── Workers (top-left) ─── -->
+        <mxCell id="workers" value="" style="shape=table;startSize=30;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;fillColor=#d5e8d4;strokeColor=#82b366;rounded=1;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="60" y="60" width="320" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="workers-t" value="workers" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[];portConstraint=eastwest" vertex="1" parent="workers">
+          <mxGeometry width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="workers-c" value="id          INT(11) PK AUTO_INCREMENT&#10;name        VARCHAR(255) NOT NULL&#10;role        VARCHAR(100) DEFAULT 'Developer'&#10;status      VARCHAR(50)  DEFAULT 'idle'&#10;model       VARCHAR(255) NULL&#10;provider    VARCHAR(255) NULL&#10;toolset     VARCHAR(255) NULL&#10;project_id  INT(11) NULL FK" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[];portConstraint=eastwest;whiteSpace=wrap;html=1;rounded=1;overflow=hidden;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;fontFamily=Menlo" vertex="1" parent="workers">
+          <mxGeometry y="40" width="320" height="240" as="geometry" />
+        </mxCell>
+
+        <!-- ─── Tasks (top-center) ─── -->
+        <mxCell id="tasks" value="" style="shape=table;startSize=30;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;fillColor=#dae8fc;strokeColor=#6c8ebf;rounded=1;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="660" y="60" width="320" height="270" as="geometry" />
+        </mxCell>
+        <mxCell id="tasks-t" value="tasks" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[];portConstraint=eastwest" vertex="1" parent="tasks">
+          <mxGeometry width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="tasks-c" value="id          INT(11) PK AUTO_INCREMENT&#10;title       VARCHAR(255) NOT NULL&#10;description TEXT NULL&#10;status      VARCHAR(50)  DEFAULT 'Backlog'&#10;assigned_to INT(11) NULL FK -> workers.id&#10;project_id  INT(11) NULL FK -> projects.id&#10;created_at  TIMESTAMP DEFAULT NOW()&#10;updated_at  TIMESTAMP ON UPDATE NOW()" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[];portConstraint=eastwest;whiteSpace=wrap;html=1;rounded=1;overflow=hidden;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;fontFamily=Menlo" vertex="1" parent="tasks">
+          <mxGeometry y="40" width="320" height="230" as="geometry" />
+        </mxCell>
+
+        <!-- ─── Projects (top-right) ─── -->
+        <mxCell id="projects" value="" style="shape=table;startSize=30;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;fillColor=#fff2cc;strokeColor=#d6b656;rounded=1;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="1260" y="60" width="320" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="projects-t" value="projects" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[];portConstraint=eastwest" vertex="1" parent="projects">
+          <mxGeometry width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="projects-c" value="id          INT(11) PK AUTO_INCREMENT&#10;name        VARCHAR(255) NOT NULL&#10;description TEXT NULL&#10;status      VARCHAR(50) NOT NULL&#10;created_at  TIMESTAMP DEFAULT NOW()" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[];portConstraint=eastwest;whiteSpace=wrap;html=1;rounded=1;overflow=hidden;fillColor=#ffffff;strokeColor=#d6b656;fontSize=11;fontFamily=Menlo" vertex="1" parent="projects">
+          <mxGeometry y="40" width="320" height="150" as="geometry" />
+        </mxCell>
+
+        <!-- ─── task_logs (bottom-center) ─── -->
+        <mxCell id="logs" value="" style="shape=table;startSize=30;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;fillColor=#f8cecc;strokeColor=#b85450;rounded=1;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="660" y="540" width="320" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="logs-t" value="task_logs" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[];portConstraint=eastwest" vertex="1" parent="logs">
+          <mxGeometry width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="logs-c" value="id          INT(11) PK AUTO_INCREMENT&#10;task_id     INT(11) NOT NULL FK -> tasks.id&#10;worker_id   INT(11) NULL FK -> workers.id&#10;action      VARCHAR(100) NOT NULL&#10;detail      TEXT NULL&#10;created_at  TIMESTAMP DEFAULT NOW()" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[];portConstraint=eastwest;whiteSpace=wrap;html=1;rounded=1;overflow=hidden;fillColor=#ffffff;strokeColor=#b85450;fontSize=11;fontFamily=Menlo" vertex="1" parent="logs">
+          <mxGeometry y="40" width="320" height="160" as="geometry" />
+        </mxCell>
+
+        <!-- ─── EDGES (no crossings) ─── -->
+
+        <!-- workers.project_id -> projects.id (straight top-right) -->
+        <mxCell id="r4" value="project_id" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;startArrow=none;endArrow=none;startFill=0;endFill=0;exitX=1;exitY=0.15;entryX=0;entryY=0.15" edge="1" parent="1" source="workers" target="projects">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- tasks.project_id -> projects.id (flat right) -->
+        <mxCell id="r3" value="project_id" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;startArrow=none;endArrow=none;startFill=0;endFill=0;exitX=1;exitY=0.35;entryX=0;entryY=0.35" edge="1" parent="1" source="tasks" target="projects">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- tasks.assigned_to -> workers.id (flat left) -->
+        <mxCell id="r1" value="assigned_to" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;startArrow=none;endArrow=none;startFill=0;endFill=0;exitX=0;exitY=0.55;entryX=1;entryY=0.55" edge="1" parent="1" source="tasks" target="workers">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- tasks -> task_logs (straight down) -->
+        <mxCell id="r5" value="task_logs.task_id" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;startArrow=none;endArrow=none;startFill=0;endFill=0;exitX=0.3;exitY=1;entryX=0.3;entryY=0" edge="1" parent="1" source="tasks" target="logs">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- workers -> task_logs via bottom of workers, across to logs -->
+        <mxCell id="r6" value="task_logs.worker_id" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;startArrow=none;endArrow=none;startFill=0;endFill=0;exitX=0.7;exitY=1;entryX=0.7;entryY=0" edge="1" parent="1" source="workers" target="logs">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ═══ LEGEND ═══ -->
+        <mxCell id="legend" value="Legend:&#10;Green = workers&#10;Blue  = tasks&#10;Yellow = projects&#10;Red   = task_logs&#10;Arrows are foreign-key relationships.&#10;No crossing lines." style="text;html=1;align=left;verticalAlign=top;fillColor=none;strokeColor=none;fontSize=10;fontColor=#666666" vertex="1" parent="1">
+          <mxGeometry x="1260" y="540" width="260" height="100" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

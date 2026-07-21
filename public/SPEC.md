@@ -1,0 +1,1 @@
+/home/sfarrant/.openclaw/workspace/VibeBoard/SPEC.md

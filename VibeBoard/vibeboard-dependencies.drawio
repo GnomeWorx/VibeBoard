@@ -1,0 +1,109 @@
+<mxfile host="Electron" agent="Hermes">
+  <diagram name="VibeBoard Dependencies" id="vibeboard-deps">
+    <mxGraphModel dx="1956" dy="1150" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="fc" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1" value="public/index.php&#xa;(Front Controller)" vertex="1">
+          <mxGeometry height="60" width="180" x="730" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="config" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656" value="config/config.php&#xa;(Config Loader)" vertex="1">
+          <mxGeometry height="60" width="160" x="150" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="err" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366" value="src/Core/ErrorHandler.php&#xa;(Exception Handler)" vertex="1">
+          <mxGeometry height="60" width="200" x="590" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="router" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366" value="src/Router/Router.php&#xa;(HTTP Router)" vertex="1">
+          <mxGeometry height="60" width="160" x="850" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="db" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656" value="config/db.php&#xa;(PDO Factory)" vertex="1">
+          <mxGeometry height="60" width="160" x="210" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="bc" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366" value="src/Controllers/BaseController.php&#xa;(JSON helpers, input parsing)" vertex="1">
+          <mxGeometry height="60" width="240" x="810" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="worker" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366" value="src/Models/Worker.php&#xa;(Worker CRUD Model)" vertex="1">
+          <mxGeometry height="60" width="200" x="610" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="ctest" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450" value="tests/ConfigTest.php" vertex="1">
+          <mxGeometry height="40" width="140" x="110" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="boot" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450" value="tests/bootstrap.php&#xa;(Test Autoloader)" vertex="1">
+          <mxGeometry height="50" width="140" x="110" y="640" as="geometry" />
+        </mxCell>
+        <mxCell id="db2" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1" value="MariaDB&#xa;(tasks, workers tables)" vertex="1">
+          <mxGeometry height="60" width="120" x="570" y="810" as="geometry" />
+        </mxCell>
+        <mxCell id="mig" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;dashed=1" value="migrations/&#xa;(DB Schema)" vertex="1">
+          <mxGeometry height="50" width="120" x="120" y="810" as="geometry" />
+        </mxCell>
+        <mxCell id="html" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1" value="public/index.html&#xa;(Dashboard UI)" vertex="1">
+          <mxGeometry height="60" width="160" x="1130" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="css" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6" value="public/css/style.css&#xa;(Dark Theme CSS)" vertex="1">
+          <mxGeometry height="50" width="160" x="1370" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="js" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6" value="public/js/app.js&#xa;(Fetch API + Chart.js)" vertex="1">
+          <mxGeometry height="50" width="160" x="1130" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="chartjs" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;dashed=1" value="Chart.js (CDN)" vertex="1">
+          <mxGeometry height="40" width="120" x="1430" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="fc" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=10" target="router" value="HTTP request +&#xa;route path">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="fc" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=10" target="err" value="registers&#xa;handlers">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="fc" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=10" target="config" value="app() + db()&#xa;config arrays">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="fc" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=10" target="db" value="PDO instance">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="router" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=10" target="bc" value="dispatches to&#xa;controller callback">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="bc" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;fontSize=10" target="config" value="app()[&#39;version&#39;]">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="db" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fontSize=10" target="config" value="db() config array">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="db" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=10" target="db2" value="SQL queries&#xa;(prepared statements)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="worker" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;fontSize=10" target="db2" value="CRUD SQL&#xa;(SELECT, INSERT, UPDATE, DELETE)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" edge="1" parent="1" source="router" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=10" target="worker" value="calls model methods">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" edge="1" parent="1" source="html" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=10" target="css" value="&lt;link&gt; stylesheet">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" edge="1" parent="1" source="html" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=10" target="js" value="&lt;script&gt; src">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" edge="1" parent="1" source="js" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=10" target="chartjs" value="loads Chart constructor">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" edge="1" parent="1" source="js" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;dashed=1;fontSize=10" target="fc" value="fetch() -&gt;&#xa;JSON API calls">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e15" edge="1" parent="1" source="ctest" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fontSize=10" target="config" value="asserts config values">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e16" edge="1" parent="1" source="ctest" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=10" target="boot" value="loads autoloader">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e17" edge="1" parent="1" source="mig" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;dashed=1;fontSize=10" target="db2" value="CREATE TABLE&#xa;DDL statements">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="legend" parent="1" style="text;html=1;align=left;verticalAlign=top;fillColor=none;strokeColor=none;fontSize=10" value="Legend:&#xa;Blue = Entry point&#xa;Green = PHP source (src/)&#xa;Yellow = Config&#xa;Purple = Frontend&#xa;Red = Tests / Database&#xa;Dashed = External / Pending" vertex="1">
+          <mxGeometry height="120" width="260" x="1130" y="310" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
