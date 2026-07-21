@@ -377,17 +377,37 @@ header nav {
 .btn-sm { padding: 3px 10px; font-size: 12px; }
 .btn-sm svg { width: 14px; height: 14px; }
 
-.btn-start { background: #0d4a1a; border-color: #238636; color: #3fb950; }
-.btn-start:hover { background: #196c2e; border-color: #2ea043; color: #56d364; }
-.btn-start:active { background: #238636; }
-.btn-start svg { color: #3fb950; }
+.btn-start {
+    background: rgba(61, 106, 89, 0.12);
+    border-color: rgba(61, 106, 89, 0.3);
+    color: #7ab89e;
+}
+.btn-start:hover {
+    background: rgba(61, 106, 89, 0.2);
+    border-color: rgba(61, 106, 89, 0.5);
+    color: #8fc9af;
+}
+.btn-start:active {
+    background: rgba(61, 106, 89, 0.3);
+}
+.btn-start svg { color: #7ab89e; }
 
-.btn-stop { background: #4a0d0d; border-color: #da3633; color: #f85149; }
-.btn-stop:hover { background: #6b1a1a; border-color: #f85149; color: #ff6b6b; }
-.btn-stop:active { background: #da3633; }
-.btn-stop svg { color: #f85149; }
+.btn-stop {
+    background: rgba(140, 87, 70, 0.12);
+    border-color: rgba(140, 87, 70, 0.3);
+    color: #d4a08a;
+}
+.btn-stop:hover {
+    background: rgba(140, 87, 70, 0.2);
+    border-color: rgba(140, 87, 70, 0.5);
+    color: #e0b09a;
+}
+.btn-stop:active {
+    background: rgba(140, 87, 70, 0.3);
+}
+.btn-stop svg { color: #d4a08a; }
 
-.actions-divider { height: 1px; background: var(--border); margin: 8px 0; }
+.actions-divider { height: 1px; background: var(--border); margin: 10px 0; }
 
 .btn-close {
     background: none;
@@ -1063,6 +1083,14 @@ tr:hover { background: rgba(88,166,255,.04); }
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 16px;
+}
+.actions-panel .btn {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 8px 12px;
+}
+.actions-panel .btn + .btn {
+    margin-top: 6px;
 }
 
 /* ── Section Titles ──────────────────────────────────────────────── */
