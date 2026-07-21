@@ -377,6 +377,18 @@ header nav {
 .btn-sm { padding: 3px 10px; font-size: 12px; }
 .btn-sm svg { width: 14px; height: 14px; }
 
+.btn-start { background: #0d4a1a; border-color: #238636; color: #3fb950; }
+.btn-start:hover { background: #196c2e; border-color: #2ea043; color: #56d364; }
+.btn-start:active { background: #238636; }
+.btn-start svg { color: #3fb950; }
+
+.btn-stop { background: #4a0d0d; border-color: #da3633; color: #f85149; }
+.btn-stop:hover { background: #6b1a1a; border-color: #f85149; color: #ff6b6b; }
+.btn-stop:active { background: #da3633; }
+.btn-stop svg { color: #f85149; }
+
+.actions-divider { height: 1px; background: var(--border); margin: 8px 0; }
+
 .btn-close {
     background: none;
     border: none;

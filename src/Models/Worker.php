@@ -68,6 +68,16 @@ class Worker {
         return $stmt->fetchAll();
     }
 
+    /**
+     * Batch-update status for all workers with a given current status.
+     * Returns the number of workers updated.
+     */
+    public function batchUpdateStatus(string $fromStatus, string $toStatus): int {
+        $stmt = $this->pdo->prepare("UPDATE workers SET status = ? WHERE status = ?");
+        $stmt->execute([$toStatus, $fromStatus]);
+        return $stmt->rowCount();
+    }
+
     public function findById(int $id): ?array {
         $stmt = $this->pdo->prepare("SELECT * FROM workers WHERE id = ?");
         $stmt->execute([$id]);

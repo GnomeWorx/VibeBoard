@@ -464,6 +464,29 @@ $router->addRoute('DELETE', '/api/workers/{id}', function () use ($pdo) {
     }
 });
 
+// ── Batch worker start/stop ────────────────────────────────────
+$router->addRoute('POST', '/api/workers/start', function () use ($pdo) {
+    if (!$pdo) jsonResponse(['error' => 'Database unavailable'], 503);
+    try {
+        $workerModel = new Worker($pdo);
+        $count = $workerModel->batchUpdateStatus('idle', 'busy');
+        jsonResponse(['success' => true, 'updated' => $count, 'action' => 'started']);
+    } catch (Throwable $e) {
+        ErrorHandler::handle($e, 'Workers');
+    }
+});
+
+$router->addRoute('POST', '/api/workers/stop', function () use ($pdo) {
+    if (!$pdo) jsonResponse(['error' => 'Database unavailable'], 503);
+    try {
+        $workerModel = new Worker($pdo);
+        $count = $workerModel->batchUpdateStatus('busy', 'idle');
+        jsonResponse(['success' => true, 'updated' => $count, 'action' => 'stopped']);
+    } catch (Throwable $e) {
+        ErrorHandler::handle($e, 'Workers');
+    }
+});
+
 // ── Project routes ────────────────────────────────────────────────────
 $router->addRoute('GET', '/api/projects', function () use ($pdo) {
     if (!$pdo) jsonResponse(['error' => 'Database unavailable'], 503);

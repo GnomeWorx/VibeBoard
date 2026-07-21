@@ -50,6 +50,8 @@
         taskCount:    $('task-count-label'),
         btnRefresh:   $('btn-refresh'),
         btnNewTask:   $('btn-new-task'),
+        btnStartWorkers: $('btn-start-workers'),
+        btnStopWorkers:  $('btn-stop-workers'),
         // Task modal
         modal:            $('task-modal'),
         modalTitle:       $('modal-title'),
@@ -1479,6 +1481,38 @@
     // ── Event listeners ────────────────────────────────────────────────
     els.btnRefresh.addEventListener('click', reloadAll);
     els.btnNewTask.addEventListener('click', () => openModal('New Task', null));
+
+    els.btnStartWorkers.addEventListener('click', async () => {
+        els.btnStartWorkers.disabled = true;
+        try {
+            const res = await fetch(`${API_BASE}/workers/start`, { method: 'POST' });
+            const data = await res.json();
+            if (data.success) {
+                showToast(`Started ${data.updated} worker${data.updated !== 1 ? 's' : ''}`, 'success');
+                await reloadAll();
+            }
+        } catch (err) {
+            showToast('Failed to start workers', 'error');
+        } finally {
+            els.btnStartWorkers.disabled = false;
+        }
+    });
+
+    els.btnStopWorkers.addEventListener('click', async () => {
+        els.btnStopWorkers.disabled = true;
+        try {
+            const res = await fetch(`${API_BASE}/workers/stop`, { method: 'POST' });
+            const data = await res.json();
+            if (data.success) {
+                showToast(`Stopped ${data.updated} worker${data.updated !== 1 ? 's' : ''}`, 'success');
+                await reloadAll();
+            }
+        } catch (err) {
+            showToast('Failed to stop workers', 'error');
+        } finally {
+            els.btnStopWorkers.disabled = false;
+        }
+    });
 
     els.modalClose.addEventListener('click', closeModal);
     els.formCancel.addEventListener('click', closeModal);
