@@ -48,3 +48,4 @@ class Config {
 
 // Initialize loader
 Config::load();
+// Add settings specific configurations and services used by the new feature\n// Example: Register Service Provider or bind service in config/services.php (if it exists)\n\n// Assuming a dependency container mechanism:\nApp::bind('settings_service', \App\Services\SettingsService::class);\n\n// Also, update routes file to map /settings endpoints:\n// Use the Controller and Service when defining routes:\nRoute::get('/settings', [App\Controllers\SettingsController::class, 'index']);\nRoute::post('/settings', [App\Controllers\SettingsController::class, 'update']);\n

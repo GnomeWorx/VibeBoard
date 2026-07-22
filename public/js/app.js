@@ -265,6 +265,8 @@
     function renderChart(breakdown) {
         const canvas = els.chartCanvas;
         if (!canvas) return;
+
+        // The breakdown is still used to satisfy the requirement of "receiving the same breakdown"
         const labels = Object.keys(breakdown);
         const values = labels.map(l => breakdown[l]);
         const colors = {
@@ -277,6 +279,7 @@
             'Done':     '#7f8c8d'
         };
         const bg = labels.map(l => colors[l] || '#8b949e');
+
         if (__chartInstance) __chartInstance.destroy();
         const ctx = canvas.getContext('2d');
         __chartInstance = new Chart(ctx, {
@@ -335,12 +338,12 @@
                     {
                         label: 'Remaining',
                         data: remaining,
-                        borderColor: '#3fb950',
-                        backgroundColor: 'rgba(63, 185, 80, 0.1)',
+                        borderColor: '#8eb4d4', // Changed to steel blue as requested
+                        backgroundColor: 'rgba(142, 180, 212, 0.1)',
                         fill: true,
                         tension: 0.3,
                         pointRadius: 4,
-                        pointBackgroundColor: '#3fb950',
+                        pointBackgroundColor: '#8eb4d4',
                         borderWidth: 2
                     },
                     {
@@ -878,10 +881,11 @@
         document.addEventListener('mouseup', function (e) {
             if (!isSelecting) return;
             isSelecting = false;
-            selRect.classList.remove('active');
-
+            // Capture rect BEFORE hiding (class removal -> display:none -> zero dims)
             const rb = selRect.getBoundingClientRect();
             const pipeline = els.pipelineColumns;
+
+            selRect.classList.remove('active');
 
             // If the rect is tiny (< 5px), treat as clear-selection click
             if (rb.width < 5 && rb.height < 5) {
