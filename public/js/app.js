@@ -102,6 +102,16 @@
         storiesCount:    $('stories-count'),
         btnNewStory:     $('btn-new-story'),
         btnGhIntegrate:  $('btn-gh-integrate'),
+        // Story modal
+        storyModal:      $('story-modal'),
+        storyForm:       $('story-form'),
+        storyTitle:      $('story-title'),
+        storyDescription: $('story-description'),
+        storyType:       $('story-type'),
+        storyComplexity: $('story-complexity'),
+        storyCancel:     $('story-cancel'),
+        storyClose:      $('story-modal-close'),
+        storySubmit:     $('story-submit'),
         // Reports
         reportGrid:            $('report-grid'),
         reportAvgRegressions:  $('report-avg-regressions'),
@@ -1827,16 +1837,38 @@
 
     // ── Init ────────────────────────────────────────────────────────────
     // New Story button
-    if (els.btnNewStory) {
+    if (els.storyModal && els.storyForm && els.btnNewStory) {
+        // Open modal
         els.btnNewStory.addEventListener('click', () => {
-            const title = prompt('New Story title:');
-            if (!title || !title.trim()) return;
+            els.storyForm.reset();
+            els.storyId ? els.storyId.value = '' : null;
+            els.storyModal.classList.remove('hidden');
+            els.storyTitle.focus();
+        });
+        // Close handlers
+        const closeStory = () => els.storyModal.classList.add('hidden');
+        els.storyCancel && els.storyCancel.addEventListener('click', closeStory);
+        els.storyClose && els.storyClose.addEventListener('click', closeStory);
+        els.storyModal.addEventListener('click', (e) => {
+            if (e.target === els.storyModal) closeStory();
+        });
+        // Form submit
+        els.storyForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const payload = {
+                title: els.storyTitle.value.trim(),
+                description: els.storyDescription.value.trim(),
+                story_type: els.storyType.value,
+                complexity: parseInt(els.storyComplexity.value) || 3,
+            };
+            if (!payload.title) return;
             fetch(API_BASE + '/stories', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title: title.trim() }),
+                body: JSON.stringify(payload),
             }).then(r => r.json()).then(() => {
                 showToast('Story created', 'success');
+                closeStory();
                 fetchData();
             }).catch(() => showToast('Failed to create story', 'error'));
         });
