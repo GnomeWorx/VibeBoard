@@ -12,22 +12,16 @@ try:
     r = urllib.request.urlopen('http://127.0.0.1:8899/api/projects', timeout=5)
     for p in json.loads(r.read()):
         if p.get('active') or p.get('id') == 1:
-            name = p.get('name','VibeBoard').strip()
+            print(p.get('name','VibeBoard').strip())
             break
     else:
-        name = 'VibeBoard'
+        print('VibeBoard')
 except:
-    name = 'VibeBoard'
-# Normalize to kebab-case
-import re
-name = re.sub(r'[^a-zA-Z0-9\s-]', '', name).strip().lower()
-name = '-'.join(name.split())
-print(name or 'vibeboard')
+    print('VibeBoard')
 ")
-
-REPO="GnomeWorx/${PROJECT}"
-
 echo "→ Project: ${PROJECT}"
+
+REPO="GnomeWorx/${PROJECT// /-}"
 echo "→ Repo:    ${REPO}"
 
 # Check if repo exists — if not, create it
