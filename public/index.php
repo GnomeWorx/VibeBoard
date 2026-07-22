@@ -74,6 +74,9 @@ function jsonResponse(mixed $data, int $code = 200): void {
     exit;
 }
 
+// ── CORS headers for local dev ──────────────────────────────────────
+header('Access-Control-Allow-Origin: *');
+
 // ── Project scoping helper ─────────────────────────────────────────────
 function getProjectScope(?PDO $pdo): ?int {
     if ($pdo === null) return null;
@@ -114,6 +117,7 @@ $router->addRoute('GET', '/api/metrics', function () use ($pdo) {
         jsonResponse([
             'progressPercentage' => $metrics->getProgressPercentage(),
             'breakdown'    => $metrics->getStatusBreakdown(),
+            'velocity'     => $metrics->getVelocity(),
         ]);
     } catch (Throwable $e) {
         ErrorHandler::handle($e, 'Metrics');
@@ -520,6 +524,45 @@ $router->addRoute('DELETE', '/api/workers/{id}', function () use ($pdo) {
         jsonResponse(['success' => $workerModel->delete($id)]);
     } catch (Throwable $e) {
         ErrorHandler::handle($e, 'Workers');
+    }
+});
+
+// ── Worker metrics ───────────────────────────────────────────────────
+$router->addRoute('GET', '/api/worker-metrics', function () use ($pdo) {
+    if (!$pdo) jsonResponse(['error' => 'Database unavailable'], 503);
+    try {
+        $stmt = $pdo->query("
+            SELECT
+                w.id, w.name, w.role,
+                COALESCE(SUM(t.lines_changed), 0) AS total_lines,
+                COALESCE(SUM(TIMESTAMPDIFF(MINUTE, t.started_at, t.completed_at)), 0) AS total_minutes,
+                COUNT(t.id) AS tasks_done,
+                COALESCE(SUM(t.lines_changed) / GREATEST(SUM(TIMESTAMPDIFF(MINUTE, t.started_at, t.completed_at)), 1), 0) AS lines_per_min
+            FROM workers w
+            LEFT JOIN tasks t ON t.assigned_to = w.id AND t.status = 'Done'
+            WHERE w.id IN (1,3,4,5,8)
+            GROUP BY w.id
+            ORDER BY w.id
+        ");
+        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        // Normalise efficiency to 1-5 scale across workers
+        $lpmValues = array_column($rows, 'lines_per_min');
+        $maxLpm = max($lpmValues) ?: 1.0;
+
+        foreach ($rows as &$r) {
+            $r['total_lines'] = (int)$r['total_lines'];
+            $r['total_minutes'] = (int)$r['total_minutes'];
+            $r['tasks_done'] = (int)$r['tasks_done'];
+            // Avoid div-by-zero in PHP even though SQL should handle it
+            $raw = (float)($r['lines_per_min'] ?? 0);
+            $r['efficiency'] = $maxLpm > 0 ? round(1 + ($raw / $maxLpm) * 4, 1) : 1.0;
+            unset($r['lines_per_min']);
+        }
+
+        jsonResponse($rows);
+    } catch (Throwable $e) {
+        jsonResponse(['error' => $e->getMessage()], 500);
     }
 });
 

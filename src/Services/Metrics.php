@@ -60,4 +60,25 @@ class Metrics {
         }
         return $result;
     }
+
+    /**
+     * Compute velocity: average tasks completed per day over last 7 days.
+     */
+    public function getVelocity(): float {
+        $where = '';
+        $params = [];
+        if ($this->projectId !== null) {
+            $where = ' AND project_id = ?';
+            $params[] = $this->projectId;
+        }
+        $stmt = $this->pdo->prepare("
+            SELECT COUNT(*) / 7.0 as velocity
+            FROM tasks
+            WHERE completed_at IS NOT NULL
+              AND completed_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+              $where
+        ");
+        $stmt->execute($params);
+        return round((float)$stmt->fetchColumn(), 1);
+    }
 }

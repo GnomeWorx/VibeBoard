@@ -134,6 +134,10 @@
       <div class="chart-container">
         <div class="chart-header">
           <h2 class="section-title">Task Distribution</h2>
+          <div class="velocity-stat">
+            <span class="velocity-value" id="velocity-value">—</span>
+            <span class="velocity-label">tasks / day</span>
+          </div>
           <div class="chart-tabs">
             <button class="chart-tab active" data-chart="burndown">Burndown</button>
             <button class="chart-tab" data-chart="donut">Status</button>
@@ -212,7 +216,17 @@
           Manage Agents
         </button>
       </div>
-      <div class="workers-grid" id="workers-grid"></div>
+      <div class="workers-grid-section">
+        <div class="workers-grid" id="workers-grid"></div>
+        <div class="worker-metrics-panel" id="worker-metrics-panel">
+          <div class="metrics-header">
+            <h3>Worker Metrics</h3>
+          </div>
+          <div class="metrics-body" id="metrics-body">
+            <div class="metrics-loading">Loading...</div>
+          </div>
+        </div>
+      </div>
 
 
     <!-- Manage Agents Modal -->

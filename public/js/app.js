@@ -192,7 +192,7 @@
 
     async function fetchData() {
         try {
-            const [tasks, metrics, workers, projects, currentProject, stories, reports] = await Promise.all([
+            const [tasks, metrics, workers, projects, currentProject, stories, reports, workerMetrics] = await Promise.all([
                 fetchJSON(`${API_BASE}/tasks`),
                 fetchJSON(`${API_BASE}/metrics`),
                 fetchJSON(`${API_BASE}/workers`),
@@ -200,6 +200,7 @@
                 fetchJSON(`${API_BASE}/projects/current`).catch(() => null),
                 fetchJSON(`${API_BASE}/stories`).catch(() => []),
                 fetchJSON(`${API_BASE}/reports/stats`).catch(() => null),
+                fetchJSON(`${API_BASE}/worker-metrics`).catch(() => []),
             ]);
 
             allWorkers = workers;
@@ -239,6 +240,7 @@
             renderPipeline(tasks);
             renderStories(stories, tasks);
             renderReports(reports);
+            renderWorkerMetrics(workerMetrics);
         } catch (err) {
             showToast('Failed to load data', 'error');
         }
@@ -267,6 +269,9 @@
         els.inProgressTasks.textContent = (b.Plan || 0) + (b.Spec || 0) + (b.Assess || 0) + (b.Code || 0) + (b.Test || 0) + (b.Review || 0);
         els.backlogTasks.textContent = b.Plan || 0;
         els.progressPct.textContent = (data.progressPercentage != null) ? data.progressPercentage + '%' : '0%';
+        // Velocity
+        const velEl = document.getElementById('velocity-value');
+        if (velEl) velEl.textContent = (data.velocity != null) ? data.velocity : '—';
         renderChart(b);
     }
 
@@ -413,6 +418,34 @@
             }
         });
     });
+
+    // ── Worker Metrics ─────────────────────────────────────────────────
+    function renderWorkerMetrics(rows) {
+        const body = document.getElementById('metrics-body');
+        if (!body) return;
+        if (!Array.isArray(rows) || rows.length === 0) {
+            body.innerHTML = '<div class="metrics-loading">No data</div>';
+            return;
+        }
+        body.innerHTML = rows.map(w => {
+            const mins = w.total_minutes || 0;
+            const hrs = mins >= 60 ? Math.floor(mins / 60) + 'h ' : '';
+            const minRem = mins % 60;
+            const timeStr = hrs + minRem + 'm';
+            const eff = w.efficiency || 1;
+            const cls = eff >= 4 ? 'good' : eff >= 2.5 ? 'average' : 'low';
+            const star = eff >= 4.5 ? '\u2605' : eff >= 3.5 ? '\u2606' : '';
+            return '<div class="metrics-row">'
+                + '<span class="metrics-name">' + escHtml(w.name) + '</span>'
+                + '<span class="metrics-stats">'
+                    + '<span><strong>' + w.total_lines + '</strong> lines</span>'
+                    + '<span><strong>' + w.tasks_done + '</strong> tasks</span>'
+                    + '<span><strong>' + timeStr + '</strong> total</span>'
+                + '</span>'
+                + '<span class="metrics-eff ' + cls + '">' + eff.toFixed(1) + star + '</span>'
+                + '</div>';
+        }).join('');
+    }
 
     // ── Tasks ────────────────────────────────────────────────────────────
     function sortTasks(tasks) {
@@ -1213,6 +1246,20 @@
     }
 
     // ── Workers ────────────────────────────────────────────────────────
+    function fuzzyInsight(w) {
+        if (w.status !== 'busy') return 'Available';
+        const stage = (w.task_status || '').toLowerCase().replace(/[^a-z]/g, '');
+        const title = w.task_title || '';
+        const actions = { plan:'Planning', spec:'Drafting', assess:'Assessing',
+                          code:'Coding', test:'Testing', review:'Reviewing',
+                          'qareview':'Verifying' };
+        const prefix = actions[stage] || 'Working on';
+        let clean = title;
+        while (/^(Docs:|Documentation for)\s/i.test(clean))
+            clean = clean.replace(/^(Docs:|Documentation for)\s*/i, '').trim();
+        return `${prefix} ${clean}`;
+    }
+
     function renderWorkers(workers) {
         if (!Array.isArray(workers)) workers = [];
         const active = workers.filter(w => w.status === 'busy');
@@ -1251,6 +1298,7 @@
                         </div>
                         <div class="worker-role">${escHtml(w.role)}</div>
                         ${w.model ? `<div class="worker-model">${escHtml(w.model)}</div>` : ''}
+                        <div class="worker-insight">${escHtml(fuzzyInsight(w))}</div>
                     </div>
                 </div>
                 ${taskHtml}

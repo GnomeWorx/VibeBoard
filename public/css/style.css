@@ -516,6 +516,15 @@ main {
     gap: 8px;
 }
 
+.workers-grid-section {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+.workers-grid-section .workers-grid {
+    flex: 1;
+    min-width: 0;
+}
 .workers-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -1791,3 +1800,100 @@ tr:hover { background: rgba(88,166,255,.04); }
 }
 .chart-tab:hover { color: var(--text); }
 .chart-tab.active { background: var(--surface); color: var(--text); }
+
+/* ── Velocity stat in chart header ──────────────────────────── */
+.velocity-stat {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    background: var(--accent);
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    line-height: 1;
+}
+.velocity-stat .velocity-value {
+    font-size: 20px;
+    font-weight: 700;
+}
+.velocity-stat .velocity-label {
+    opacity: 0.85;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 10px;
+}
+
+/* ── Worker metrics panel ───────────────────────────────────── */
+.worker-metrics-panel {
+    width: 340px;
+    flex-shrink: 0;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+.worker-metrics-panel .metrics-header {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+}
+.worker-metrics-panel .metrics-header h3 {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+}
+.worker-metrics-panel .metrics-body {
+    padding: 8px 0;
+    max-height: 420px;
+    overflow-y: auto;
+}
+.worker-metrics-panel .metrics-loading {
+    padding: 20px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+.worker-metrics-panel .metrics-row {
+    display: flex;
+    align-items: center;
+    padding: 7px 14px;
+    gap: 8px;
+    transition: background 0.15s;
+}
+.worker-metrics-panel .metrics-row:hover {
+    background: var(--surface);
+}
+.worker-metrics-panel .metrics-row + .metrics-row {
+    border-top: 1px solid var(--border);
+}
+.worker-metrics-panel .metrics-name {
+    width: 56px;
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--text);
+    flex-shrink: 0;
+}
+.worker-metrics-panel .metrics-stats {
+    flex: 1;
+    display: flex;
+    gap: 10px;
+    font-size: 11px;
+    color: var(--text-muted);
+    flex-wrap: wrap;
+}
+.worker-metrics-panel .metrics-stats strong {
+    color: var(--text);
+    font-weight: 600;
+}
+.worker-metrics-panel .metrics-eff {
+    width: 28px;
+    text-align: right;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+.worker-metrics-panel .metrics-eff.good { color: #3fb950; }
+.worker-metrics-panel .metrics-eff.average { color: #d29922; }
+.worker-metrics-panel .metrics-eff.low { color: #f85149; }
