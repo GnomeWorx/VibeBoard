@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# git-up — push VibeBoard workspace to GitHub
+set -e
+
+WORKSPACE="/home/sfarrant/.openclaw/workspace"
+cd "$WORKSPACE"
+
+# Get project name from VibeBoard
+PROJECT=$(python3 -c "
+import urllib.request, json
+try:
+    r = urllib.request.urlopen('http://127.0.0.1:8899/api/projects', timeout=5)
+    for p in json.loads(r.read()):
+        if p.get('active') or p.get('id') == 1:
+            name = p.get('name','VibeBoard').strip()
+            break
+    else:
+        name = 'VibeBoard'
+except:
+    name = 'VibeBoard'
+# Normalize to kebab-case
+import re
+name = re.sub(r'[^a-zA-Z0-9\s-]', '', name).strip().lower()
+name = '-'.join(name.split())
+print(name or 'vibeboard')
+")
+
+REPO="GnomeWorx/${PROJECT}"
+
+echo "→ Project: ${PROJECT}"
+echo "→ Repo:    ${REPO}"
+
+# Check if repo exists — if not, create it
+if ! gh repo view "$REPO" >/dev/null 2>&1; then
+    echo "→ Repo doesn't exist — creating..."
+    gh repo create "$REPO" --private --source=. --push --remote origin 2>&1 || true
+    echo "✓ Created and pushed"
+    exit 0
+fi
+
+echo "→ Repo exists — pushing..."
+
+# Push everything
+git add -A
+if git status --porcelain | grep -q .; then
+    git commit -m "VibeBoard: pipeline complete — $(date '+%Y-%m-%d %H:%M')"
+fi
+
+# Ensure remote is set
+if ! git remote get-url origin >/dev/null 2>&1; then
+    git remote add origin "https://github.com/${REPO}.git"
+fi
+
+git push origin master
+echo "✓ Pinned to ${REPO}"

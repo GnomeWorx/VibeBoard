@@ -204,9 +204,13 @@ class Task {
                 $data['title'] ?? ($current['title'] ?? 'New Task'),
                 $data['description'] ?? ($current['description'] ?? ''),
                 $data['status'] ?? ($current['status'] ?? 'Plan'),
-                isset($data['assigned_to']) ? (int)$data['assigned_to'] : ($current['assigned_to'] ?? null),
+                array_key_exists('assigned_to', $data)
+                    ? (($data['assigned_to'] ?? null) !== null ? (int)$data['assigned_to'] : null)
+                    : ($current['assigned_to'] ?? null),
                 $data['depends_on'] ?? ($current['depends_on'] ?? null),
-                $data['execution_log'] ?? ($current['execution_log'] ?? null),
+                array_key_exists('execution_log', $data)
+                    ? ($data['execution_log'] ?? null)
+                    : ($current['execution_log'] ?? null),
                 isset($data['retry_count']) ? (int)$data['retry_count'] : (int)($current['retry_count'] ?? 0),
                 isset($data['max_retries']) ? (int)$data['max_retries'] : (int)($current['max_retries'] ?? 3),
                 isset($data['complexity']) ? (int)$data['complexity'] : (isset($current['complexity']) ? (int)$current['complexity'] : null),
